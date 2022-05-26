@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,67 +27,77 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
 TextEditingController name = TextEditingController();
-List<String>?history=[];
+List<String>? history = [];
 String? v;
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-  initState(){
-   insp();
-super.initState();
+  initState() {
+    insp();
+    super.initState();
   }
-Future insp()async{
-  SharedPreferences sp = await SharedPreferences.getInstance();
-  history = sp.getStringList('v');
-  print(history);
-}
- Future add(String v)async{
+
+  Future insp() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    setState((){
-    if(history!.length <3){
-      history!.add(v);
-      sp.setStringList('v', history!);
-      history = sp.getStringList('v');
-      print("$history"+"add");
-    }else{
-      history!.removeLast();
-      sp.setStringList('v', history!);
-      history = sp.getStringList('v');
-      print("$history"+"remove");
-    }
+    history = sp.getStringList('v') ?? [];
+    print(history);
+  }
 
-
-
+  Future add(String v) async {
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    setState(() {
+      if (history!.length < 3) {
+        history!.add(v);
+        sp.setStringList('v', history!);
+        history = sp.getStringList('v');
+        print("$history");
+      } else {
+        history!.removeAt(0);
+        history!.add(v);
+        sp.setStringList('v', history!);
+        history = sp.getStringList('v');
+        print("$history");
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    body: Stack(children: [
-      TextField(
-        controller: name ,
-        onChanged: (value){
-          v = value;
-        },
+      appBar: AppBar(
+        title: const Text("Search App Bar"),
+        titleSpacing: 150,
       ),
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      body: Stack(
         children: [
-          Row(
+          Container(
+            margin: const EdgeInsets.only(top: 10,right: 10,left: 10),
+            child: TextField(
+              controller: name,
+              onChanged: (value) {
+                v = value;
+              },
+            ),
+          ),
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: (){
-                add(name.text.toString());
-              }, icon: Icon(Icons.add)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        add(name.text.toString());
+                      },
+                      icon: const Icon(Icons.add)),
+                ],
+              ),
             ],
           ),
         ],
       ),
-    ],
-    ),
     );
   }
 }
-
