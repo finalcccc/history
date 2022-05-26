@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -70,33 +71,42 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text("Search App Bar"),
         titleSpacing: 150,
       ),
-      body: Stack(
+      body: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 10,right: 10,left: 10),
-            child: TextField(
-              controller: name,
-              onChanged: (value) {
-                v = value;
-              },
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
+              Container(
+                margin: const EdgeInsets.only(top: 10,right: 10,left: 10),
+                child: TextField(
+                  controller: name,
+                  onChanged: (value) {
+                    v = value;
+                  },
+                ),
+              ),
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        add(name.text.toString());
-                      },
-                      icon: const Icon(Icons.add)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            add(name.text.toString());
+                          },
+                          icon: const Icon(Icons.add)),
+                    ],
+                  ),
                 ],
               ),
+              Expanded(
+                child: ListView.builder(itemCount: history == null?1:history!.length,itemBuilder: (context, index) {
+                  if(history == null){
+                    return Text("ຄົນຫາ");
+                  }else{
+                    return Text(history![index].toString());
+                  }
+                },),
+              )
             ],
-          ),
-        ],
       ),
     );
   }
