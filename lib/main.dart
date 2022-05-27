@@ -37,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     addHistory();
+    addRemove('');
     super.initState();
   }
 
@@ -49,17 +50,21 @@ class _MyHomePageState extends State<MyHomePage> {
   Future addRemove(String getValue) async {
     SharedPreferences spf = await SharedPreferences.getInstance();
     setState(() {
-      if (history!.length < 3) {
-        history!.add(getValue);
-        spf.setStringList('getValue', history!);
-        history = spf.getStringList('getValue');
-      } else {
-        history!.removeAt(0);
-        history!.add(getValue);
-        spf.setStringList('getValue', history!);
-        history = spf.getStringList('getValue');
+      if(getValue != ''){
+        if (history!.length < 3) {
+          history!.add(getValue);
+          spf.setStringList('getValue', history!);
+          history = spf.getStringList('getValue');
+        } else {
+          history!.removeAt(0);
+          history!.add(getValue);
+          spf.setStringList('getValue', history!);
+          history = spf.getStringList('getValue');
+
+        }
 
       }
+
     });
   }
 
