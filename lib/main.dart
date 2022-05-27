@@ -1,8 +1,7 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, unnecessary_string_interpolations
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -13,6 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -29,38 +29,46 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-TextEditingController name = TextEditingController();
+TextEditingController textController = TextEditingController();
 List<String>? history = [];
-String? v;
+String? getValue;
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
-    insp();
+    addHistory();
     super.initState();
   }
 
-  Future insp() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    history = sp.getStringList('v') ?? [];
+  Future addHistory() async {
+    SharedPreferences spf = await SharedPreferences.getInstance();
+    history = spf.getStringList('getValue') ?? [];
     print(history);
   }
 
-  Future add(String v) async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
+  Future addRemove(String getValue) async {
+    SharedPreferences spf = await SharedPreferences.getInstance();
     setState(() {
       if (history!.length < 3) {
-        history!.add(v);
-        sp.setStringList('v', history!);
-        history = sp.getStringList('v');
-        print("$history");
+        history!.add(getValue);
+        spf.setStringList('getValue', history!);
+        history = spf.getStringList('getValue');
       } else {
         history!.removeAt(0);
-        history!.add(v);
-        sp.setStringList('v', history!);
-        history = sp.getStringList('v');
-        print("$history");
+        history!.add(getValue);
+        spf.setStringList('getValue', history!);
+        history = spf.getStringList('getValue');
+
       }
+    });
+  }
+
+  Future delete(int index) async {
+    SharedPreferences spf = await SharedPreferences.getInstance();
+    setState(() {
+      history!.removeAt(index);
+      spf.setStringList("getValue", history!);
+      history = spf.getStringList('getValue');
     });
   }
 
@@ -69,44 +77,70 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Search App Bar"),
-        titleSpacing: 150,
+        titleSpacing: 200,
       ),
       body: Column(
         children: [
-              Container(
-                margin: const EdgeInsets.only(top: 10,right: 10,left: 10),
-                child: TextField(
-                  controller: name,
-                  onChanged: (value) {
-                    v = value;
-                  },
+          Container(
+            margin: const EdgeInsets.only(top: 10, right: 10, left: 10),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.menu),
                 ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            add(name.text.toString());
-                          },
-                          icon: const Icon(Icons.add)),
-                    ],
+                Expanded(
+                  child: TextField(
+                    controller: textController,
                   ),
-                ],
-              ),
-              Expanded(
-                child: ListView.builder(itemCount: history == null?1:history!.length,itemBuilder: (context, index) {
-                  if(history == null){
-                    return Text("ຄົນຫາ");
-                  }else{
-                    return Text(history![index].toString());
-                  }
-                },),
+                ),
+                IconButton(
+                  onPressed: () {
+                    textController.clear();
+                  },
+                  icon: const Icon(Icons.clear),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount:  history!.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "${history![index].toString()}",
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            delete(index);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                onPressed: () {
+                  addRemove(textController.text.toString());
+                },
+                icon: const Icon(Icons.search),
               )
             ],
+          ),
+        ],
       ),
     );
   }
