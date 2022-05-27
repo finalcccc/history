@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future addRemove(String getValue) async {
     SharedPreferences spf = await SharedPreferences.getInstance();
     setState(() {
-      if(getValue != ''){
+      if(getValue != '' || getValue != null){
         if (history!.length < 5) {
           history!.add(getValue);
           spf.setStringList('getValue', history!);
