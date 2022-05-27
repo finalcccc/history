@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     SharedPreferences spf = await SharedPreferences.getInstance();
     setState(() {
       if(getValue != ''){
-        if (history!.length < 3) {
+        if (history!.length < 5) {
           history!.add(getValue);
           spf.setStringList('getValue', history!);
           history = spf.getStringList('getValue');
